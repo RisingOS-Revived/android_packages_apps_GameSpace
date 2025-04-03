@@ -18,6 +18,7 @@
 package io.chaldeaprjkt.gamespace.settings
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
@@ -62,12 +63,16 @@ class SettingsFragment : Hilt_SettingsFragment() {
                 putExtra(PerAppSettingsActivity.EXTRA_PACKAGE, it)
             })
         }
-
         findPreference<Preference>(AppListPreferences.KEY_ADD_GAME)
             ?.setOnPreferenceClickListener {
                 selectorResult.launch(Intent(context, AppSelectorActivity::class.java))
                 return@setOnPreferenceClickListener true
             }
+        val isGoogleDevice = Build.MANUFACTURER.equals("Google", ignoreCase = true)
+        val bypassChargePref = findPreference<Preference>("bypass_charge_enabled")
+        if (!isGoogleDevice && bypassChargePref != null) {
+            preferenceScreen.removePreference(bypassChargePref)
+        }
     }
 
     override fun onResume() {
